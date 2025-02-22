@@ -22,4 +22,10 @@
         android:name="com.example.umte_project.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
+
+    <fragment
+        android:id="@+id/navigation_pokemon"
+        android:name="com.example.umte_project.ui.pokemon.PokemonFragment"
+        android:label="@string/title_pokemon"
+        tools:layout="@layout/fragment_pokemon" />
 </navigation>
