@@ -8,11 +8,15 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.umte_project.R
 import com.example.umte_project.api.RetrofitClient
-import com.example.umte_project.data.Pokemon
+import com.example.umte_project.data.PokemonJSON
+import com.example.umte_project.data.PokemonEntity
+import com.example.umte_project.data.PokemonDAO
 import com.example.umte_project.databinding.FragmentPokemonBinding
+import kotlinx.coroutines.launch
 
 class PokemonFragment : Fragment() {
 
@@ -22,13 +26,19 @@ class PokemonFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+    private lateinit var pokemonViewModel: PokemonViewModel
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val pokemonViewModel =
-            ViewModelProvider(this).get(PokemonViewModel::class.java)
+        pokemonViewModel = ViewModelProvider(
+            this,
+            PokemonViewModelFactory(requireActivity().application)
+        ).get(PokemonViewModel::class.java)
+
+
 
         _binding = FragmentPokemonBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -39,6 +49,11 @@ class PokemonFragment : Fragment() {
         }
 
         binding.buttonGetPokemon.setOnClickListener(::onGetPokemonButtonClick)
+
+        pokemonViewModel.pokemonList.observe(viewLifecycleOwner) { pokemons ->
+            binding.textPokemon.text = pokemons.joinToString("\n") { it.name }
+        }
+
 
         return root
     }
@@ -51,23 +66,39 @@ class PokemonFragment : Fragment() {
         val randomId = (1..1010).random()
         val pokemonName = randomId.toString()
 
-        RetrofitClient.instance.getPokemon(pokemonName).enqueue(object : retrofit2.Callback<Pokemon> {
-            override fun onResponse(call: retrofit2.Call<Pokemon>, response: retrofit2.Response<Pokemon>) {
+        RetrofitClient.instance.getPokemon(pokemonName).enqueue(object : retrofit2.Callback<PokemonJSON> {
+            override fun onResponse(call: retrofit2.Call<PokemonJSON>, response: retrofit2.Response<PokemonJSON>) {
                 if (response.isSuccessful) {
                     val pokemon = response.body()
                     val newText = "Wild ${pokemon?.name} appeared!\n"
-                    println("Name: ${pokemon?.name}\nImage: ${pokemon?.sprites?.front_default}")
+                    println("Name: ${pokemon?.name}\nImage: ${pokemon?.sprites?.frontDefault}")
                     binding.textPokemon.text = newText
-                    val imageUrl = "${pokemon?.sprites?.other?.official_artwork?.front_default}"
+                    val imageUrl = "${pokemon?.sprites?.other?.officialArtwork?.frontDefault}"
                     //val imageUrl = "${pokemon?.sprites?.other?.home?.front_default}"
                     loadPokemonImage(imageUrl)
+
+                    val pokemonEntity = PokemonEntity(
+                        id = pokemon?.id ?: 0, // Zajištění, že id není null
+                        name = pokemon?.name ?: "Unknown", // Zajištění, že name není null
+                        imageUrl = imageUrl // Zde můžeš použít imageUrl, pokud chceš uložit URL obrázku
+                    )
+
+                    lifecycleScope.launch {
+                        pokemonViewModel.insertPokemon(pokemonEntity)
+                    }
+
+
+                    pokemonViewModel.loadPokemon()
+
+
+
                 } else {
                     binding.textPokemon.text = "Failed to load Pokémon!"
                     println("Failed to load Pokémon!")
                 }
             }
 
-            override fun onFailure(call: retrofit2.Call<Pokemon>, t: Throwable) {
+            override fun onFailure(call: retrofit2.Call<PokemonJSON>, t: Throwable) {
                 binding.textPokemon.text = "Error: ${t.message}"
                 println("Error: ${t.message}")
             }
