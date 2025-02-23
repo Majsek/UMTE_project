@@ -46,18 +46,20 @@ class PokemonFragment : Fragment() {
     fun onGetPokemonButtonClick(view: View) {
         binding.textPokemon.text = "Changed text!"
         //We need to cast the view to a Button, because view itself does not have text property.
-        (view as Button).text = "Clicked!"
+        (view as Button).text = "Catch!"
 
-        val pokemonName = "pikachu"
+        val randomId = (1..1010).random()
+        val pokemonName = randomId.toString()
 
         RetrofitClient.instance.getPokemon(pokemonName).enqueue(object : retrofit2.Callback<Pokemon> {
             override fun onResponse(call: retrofit2.Call<Pokemon>, response: retrofit2.Response<Pokemon>) {
                 if (response.isSuccessful) {
                     val pokemon = response.body()
-                    val newText = "Name: ${pokemon?.name}\nImage: ${pokemon?.sprites?.front_default}"
+                    val newText = "Wild ${pokemon?.name} appeared!\n"
                     println("Name: ${pokemon?.name}\nImage: ${pokemon?.sprites?.front_default}")
                     binding.textPokemon.text = newText
-                    val imageUrl = "${pokemon?.sprites?.front_default}"
+                    val imageUrl = "${pokemon?.sprites?.other?.official_artwork?.front_default}"
+                    //val imageUrl = "${pokemon?.sprites?.other?.home?.front_default}"
                     loadPokemonImage(imageUrl)
                 } else {
                     binding.textPokemon.text = "Failed to load Pokémon!"
