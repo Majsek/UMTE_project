@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -32,7 +33,16 @@ class PokemonFragment : Fragment() {
         pokemonViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }
+
+        binding.buttonGetPokemon.setOnClickListener(::onGetPokemonButtonClick)
+
         return root
+    }
+
+    fun onGetPokemonButtonClick(view: View) {
+        binding.textPokemon.text = "Changed text!"
+        //We need to cast the view to a Button, because view itself does not have text property.
+        (view as Button).text = "Clicked!"
     }
 
     override fun onDestroyView() {
