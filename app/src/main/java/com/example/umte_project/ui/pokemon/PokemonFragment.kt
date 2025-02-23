@@ -8,6 +8,10 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
+import com.example.umte_project.R
+import com.example.umte_project.api.RetrofitClient
+import com.example.umte_project.data.Pokemon
 import com.example.umte_project.databinding.FragmentPokemonBinding
 
 class PokemonFragment : Fragment() {
@@ -43,6 +47,40 @@ class PokemonFragment : Fragment() {
         binding.textPokemon.text = "Changed text!"
         //We need to cast the view to a Button, because view itself does not have text property.
         (view as Button).text = "Clicked!"
+
+        val pokemonName = "pikachu"
+
+        RetrofitClient.instance.getPokemon(pokemonName).enqueue(object : retrofit2.Callback<Pokemon> {
+            override fun onResponse(call: retrofit2.Call<Pokemon>, response: retrofit2.Response<Pokemon>) {
+                if (response.isSuccessful) {
+                    val pokemon = response.body()
+                    val newText = "Name: ${pokemon?.name}\nImage: ${pokemon?.sprites?.front_default}"
+                    println("Name: ${pokemon?.name}\nImage: ${pokemon?.sprites?.front_default}")
+                    binding.textPokemon.text = newText
+                    val imageUrl = "${pokemon?.sprites?.front_default}"
+                    loadPokemonImage(imageUrl)
+                } else {
+                    binding.textPokemon.text = "Failed to load Pokémon!"
+                    println("Failed to load Pokémon!")
+                }
+            }
+
+            override fun onFailure(call: retrofit2.Call<Pokemon>, t: Throwable) {
+                binding.textPokemon.text = "Error: ${t.message}"
+                println("Error: ${t.message}")
+            }
+
+
+
+        })
+    }
+
+    fun loadPokemonImage(url: String) {
+        Glide.with(this)
+            .load(url)
+            .placeholder(R.drawable.placeholder) // when the image is loading
+            .error(R.drawable.error) // when the image cant load
+            .into(binding.imagePokemon)
     }
 
     override fun onDestroyView() {
