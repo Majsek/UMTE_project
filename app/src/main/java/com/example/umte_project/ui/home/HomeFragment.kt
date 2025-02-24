@@ -1,37 +1,49 @@
 package com.example.umte_project.ui.home
 
+import PokemonAdapter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.umte_project.databinding.FragmentHomeBinding
+import com.example.umte_project.ui.pokemon.PokemonViewModel
+import com.example.umte_project.ui.pokemon.PokemonViewModelFactory
 
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
+
+    private lateinit var pokemonViewModel: PokemonViewModel
+    private lateinit var adapter: PokemonAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val homeViewModel =
-            ViewModelProvider(this).get(HomeViewModel::class.java)
-
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textHome
-        homeViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
+        // Inicializace ViewModelu
+        pokemonViewModel = ViewModelProvider(
+            this,
+            PokemonViewModelFactory(requireActivity().application)
+        ).get(PokemonViewModel::class.java)
+
+        // Nastavení RecyclerView
+        adapter = PokemonAdapter(emptyList())  // Prázdný seznam, aktualizuje se dynamicky
+        binding.recyclerViewPokemon.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerViewPokemon.adapter = adapter
+
+        // Pozorování změn v databázi Pokémonů
+        pokemonViewModel.pokemonList.observe(viewLifecycleOwner) { pokemons ->
+            adapter.updateData(pokemons)
         }
+
         return root
     }
 
