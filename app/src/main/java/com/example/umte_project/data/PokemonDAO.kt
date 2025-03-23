@@ -2,6 +2,7 @@ package com.example.umte_project.data
 
 import androidx.room.*
 import com.example.umte_project.data.PokemonEntity
+import kotlinx.coroutines.flow.Flow
 
 
 @Dao
@@ -14,5 +15,5 @@ interface PokemonDAO {
     suspend fun deletePokemon(pokemon: PokemonEntity)
 
     @Query("SELECT * FROM pokemon_table")
-    suspend fun getAllPokemon(): List<PokemonEntity>
+    fun getAllPokemon(): Flow<List<PokemonEntity>>
 }

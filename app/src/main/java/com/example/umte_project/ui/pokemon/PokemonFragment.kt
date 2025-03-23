@@ -88,9 +88,6 @@ class PokemonFragment : Fragment() {
                     }
 
 
-                    pokemonViewModel.loadPokemon()
-
-
 
                 } else {
                     binding.textPokemon.text = "Failed to load Pokémon!"

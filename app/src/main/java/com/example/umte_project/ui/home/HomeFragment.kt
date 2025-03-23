@@ -44,6 +44,7 @@ class HomeFragment : Fragment() {
             adapter.updateData(pokemons)
         }
 
+
         return root
     }
 
