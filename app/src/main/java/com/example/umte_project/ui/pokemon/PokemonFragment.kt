@@ -50,9 +50,10 @@ class PokemonFragment : Fragment() {
 
         binding.buttonGetPokemon.setOnClickListener(::onGetPokemonButtonClick)
 
-        pokemonViewModel.pokemonList.observe(viewLifecycleOwner) { pokemons ->
-            binding.textPokemon.text = pokemons.joinToString("\n") { it.name }
-        }
+//        pokemonViewModel.pokemonList.observe(viewLifecycleOwner) { pokemons ->
+//            //binding.textPokemon.text = pokemons.joinToString("\n") { it.name }
+//             pokemons.joinToString("\n") { it.name }
+//        }
 
 
         return root
@@ -82,6 +83,8 @@ class PokemonFragment : Fragment() {
                         name = pokemon?.name ?: "Unknown", // Zajištění, že name není null
                         imageUrl = imageUrl // Zde můžeš použít imageUrl, pokud chceš uložit URL obrázku
                     )
+
+                    binding.textPokemon.text = newText
 
                     lifecycleScope.launch {
                         pokemonViewModel.insertPokemon(pokemonEntity)
