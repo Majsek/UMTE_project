@@ -16,4 +16,8 @@ interface PokemonDAO {
 
     @Query("SELECT * FROM pokemon_table")
     fun getAllPokemon(): Flow<List<PokemonEntity>>
+
+    @Query("SELECT * FROM pokemon_table ORDER BY id LIMIT 1")
+    suspend fun getFirstPokemon(): PokemonEntity?
+
 }

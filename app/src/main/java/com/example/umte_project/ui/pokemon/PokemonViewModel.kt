@@ -36,4 +36,9 @@ class PokemonViewModel(application: Application) : AndroidViewModel(application)
             //loadPokemon() // už není potřeba, protože změna se projeví sama
         }
     }
+
+    suspend fun getFirstPokemon(): PokemonEntity? {
+        return pokemonDao.getFirstPokemon()
+    }
+
 }

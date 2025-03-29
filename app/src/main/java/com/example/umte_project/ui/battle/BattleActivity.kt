@@ -10,7 +10,9 @@ class BattleActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_battle)
 
-        val pokemonName = intent.getStringExtra("pokemonName") ?: "Unknown"
-        findViewById<TextView>(R.id.battleText).text = "Bojuješ proti $pokemonName!"
+        val wildPokemonName = intent.getStringExtra("pokemonName") ?: "Unknown"
+        val playerPokemonName = intent.getStringExtra("playerPokemon") ?: "Unknown"
+
+        findViewById<TextView>(R.id.battleText).text = "$playerPokemonName VS $wildPokemonName!"
     }
 }
