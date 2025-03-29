@@ -1,5 +1,6 @@
 package com.example.umte_project.ui.pokemon
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,8 +15,8 @@ import com.example.umte_project.R
 import com.example.umte_project.api.RetrofitClient
 import com.example.umte_project.data.PokemonJSON
 import com.example.umte_project.data.PokemonEntity
-import com.example.umte_project.data.PokemonDAO
 import com.example.umte_project.databinding.FragmentPokemonBinding
+import com.example.umte_project.ui.battle.BattleActivity
 import kotlinx.coroutines.launch
 
 class PokemonFragment : Fragment() {
@@ -49,6 +50,9 @@ class PokemonFragment : Fragment() {
         }
 
         binding.buttonGetPokemon.setOnClickListener(::onGetPokemonButtonClick)
+        //binding.buttonGetPokemon.setOnClickListener(::onFightPokemonClick)
+
+
 
 //        pokemonViewModel.pokemonList.observe(viewLifecycleOwner) { pokemons ->
 //            //binding.textPokemon.text = pokemons.joinToString("\n") { it.name }
@@ -57,6 +61,12 @@ class PokemonFragment : Fragment() {
 
 
         return root
+    }
+
+    fun onFightPokemonClick(view: View, name: String, imageUrl: String) {
+        val intent = Intent(requireContext(), BattleActivity::class.java)
+        intent.putExtra("pokemonName", name) // Pošli název Pokémona
+        startActivity(intent)
     }
 
     fun onGetPokemonButtonClick(view: View) {
@@ -90,6 +100,7 @@ class PokemonFragment : Fragment() {
                         pokemonViewModel.insertPokemon(pokemonEntity)
                     }
 
+                    onFightPokemonClick(view, pokemonEntity.name, pokemonEntity.imageUrl)
 
 
                 } else {
