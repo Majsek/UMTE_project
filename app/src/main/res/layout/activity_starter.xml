@@ -9,10 +9,10 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Vyber si startovního Pokémona!"
+        android:paddingBottom="16dp"
+        android:text="Choose your starter Pokémon!"
         android:textSize="20sp"
-        android:textStyle="bold"
-        android:paddingBottom="16dp"/>
+        android:textStyle="bold" />
 
     <ImageView
         android:id="@+id/starter1Image"
