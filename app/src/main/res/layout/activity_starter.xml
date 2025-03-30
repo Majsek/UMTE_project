@@ -14,17 +14,35 @@
         android:textStyle="bold"
         android:paddingBottom="16dp"/>
 
+    <ImageView
+        android:id="@+id/starter1Image"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleType="centerCrop" />
+
     <Button
         android:id="@+id/starter1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Bulbasaur" />
 
+    <ImageView
+        android:id="@+id/starter2Image"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleType="centerCrop" />
+
     <Button
         android:id="@+id/starter2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Charmander" />
+
+    <ImageView
+        android:id="@+id/starter3Image"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleType="centerCrop" />
 
     <Button
         android:id="@+id/starter3"
