@@ -8,7 +8,10 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
 import com.example.umte_project.R
+import com.example.umte_project.data.PokemonEntity
+import com.example.umte_project.databinding.FragmentPokemonBinding
 import com.example.umte_project.ui.pokemon.PokemonViewModel
 import kotlinx.coroutines.launch
 
@@ -24,8 +27,8 @@ class BattleActivity : AppCompatActivity() {
     private lateinit var imagePokemonPlayer: ImageView
     private lateinit var buttonAttack: Button
 
-    private lateinit var wildPokemonName: String
-    private lateinit var playerPokemonName: String
+    private lateinit var wildPokemon: PokemonEntity
+    private lateinit var playerPokemon: PokemonEntity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,11 +43,17 @@ class BattleActivity : AppCompatActivity() {
         buttonAttack = findViewById(R.id.button_attack)
 
         // Získání údajů o Pokémonech
-        wildPokemonName = intent.getStringExtra("pokemonName") ?: "Unknown"
-        playerPokemonName = intent.getStringExtra("playerPokemon") ?: "Unknown"
+        wildPokemon = intent.getParcelableExtra("wildPokemon")!!
+        playerPokemon = intent.getParcelableExtra("playerPokemon")!!
 
-        // Nastavení textu
-        battleText.text = "$playerPokemonName VS $wildPokemonName!"
+
+        if (wildPokemon != null && playerPokemon != null) {
+            battleText.text = "${playerPokemon.name} VS ${wildPokemon.name}!"
+
+            // Načti obrázky pomocí Glide
+            loadPokemonImage(wildPokemon.imageUrl, imagePokemonWild)
+            loadPokemonImage(playerPokemon.imageUrl, imagePokemonPlayer)
+        }
 
         // Nastavení defaultních hodnot progress barů (HP)
         progressBarWild.max = 100
@@ -66,21 +75,32 @@ class BattleActivity : AppCompatActivity() {
     private fun attackWildPokemon() {
         if (progressBarWild.progress > 10) {
             progressBarWild.progress -= 9 // Snížení HP o 20
+            progressBarPlayer.progress -= 8 // Snížení HP o 20
         }
         else {
             insertPokemonIntoDatabase()
+            finish()
         }
 
         if (progressBarWild.progress <= 10){
-            battleText.text = "$playerPokemonName defeated $wildPokemonName!"
-            buttonAttack.text = "Catch $wildPokemonName!"
+            battleText.text = "${playerPokemon.name} defeated ${wildPokemon.name}!"
+            buttonAttack.text = "Catch ${wildPokemon.name}!"
         }
-    }
+    }//
 
     private fun insertPokemonIntoDatabase() {
         lifecycleScope.launch {
-//            pokemonViewModel.insertPokemon(newPokemon) // Uložení do DB
-//            battleText.text = "$pokemonName byl chycen!"
+            pokemonViewModel.insertPokemon(wildPokemon)
+            battleText.text = "${wildPokemon.name} byl chycen!"
         }
+    }
+
+
+    private fun loadPokemonImage(url: String, imageView: ImageView) {
+        Glide.with(this)
+            .load(url)
+            .placeholder(R.drawable.placeholder) // Obrázek při načítání
+            .error(R.drawable.error) // Obrázek pokud načtení selže
+            .into(imageView)
     }
 }

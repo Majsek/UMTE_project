@@ -4,6 +4,7 @@ plugins {
     id("com.google.devtools.ksp") version "1.9.22-1.0.16"
     id("com.google.dagger.hilt.android") version "2.48.1" apply false
     id("kotlin-kapt")
+    id("kotlin-parcelize") // Přidává podporu pro @Parcelize
 }
 
 android {
