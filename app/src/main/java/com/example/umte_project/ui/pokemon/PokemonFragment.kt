@@ -71,6 +71,8 @@ class PokemonFragment : Fragment() {
             val intent = Intent(requireContext(), BattleActivity::class.java)
             intent.putExtra("pokemonName", wildPokemonEntity.name) // Jméno divokého Pokémona
             intent.putExtra("playerPokemon", playerPokemonName) // Jméno hráčova Pokémona
+            intent.putExtra("wildPokemonImageUrl", wildPokemonEntity.imageUrl) // URL obrázku divovaného Pokémona
+            intent.putExtra("playerPokemonImageUrl", firstPokemon?.imageUrl) // URL obrázku hráčského Pokémona
             startActivity(intent)
         }
 
