@@ -41,4 +41,9 @@ class PokemonViewModel(application: Application) : AndroidViewModel(application)
         return pokemonDao.getFirstPokemon()
     }
 
+    suspend fun getPokemonCount(): Int {
+        return pokemonDao.getPokemonCount()
+    }
+
+
 }
