@@ -63,10 +63,18 @@ class PokemonFragment : Fragment() {
         return root
     }
 
-    fun onFightPokemonClick(view: View, name: String, imageUrl: String) {
-        val intent = Intent(requireContext(), BattleActivity::class.java)
-        intent.putExtra("pokemonName", name) // Pošli název Pokémona
-        startActivity(intent)
+    fun onFightPokemonClick(view: View, wildPokemonEntity: PokemonEntity) {
+        lifecycleScope.launch {
+            val firstPokemon = pokemonViewModel.getFirstPokemon() // Získá prvního Pokémona
+            val playerPokemonName = firstPokemon?.name ?: "Unknown"
+
+            val intent = Intent(requireContext(), BattleActivity::class.java)
+            intent.putExtra("wildPokemon", wildPokemonEntity) // Posíláme celou entitu!
+            intent.putExtra("playerPokemon", firstPokemon) // Posíláme celou entitu hráčského Pokémona!
+            startActivity(intent)
+        }
+
+
     }
 
     fun onGetPokemonButtonClick(view: View) {
@@ -100,7 +108,7 @@ class PokemonFragment : Fragment() {
                         pokemonViewModel.insertPokemon(pokemonEntity)
                     }
 
-                    onFightPokemonClick(view, pokemonEntity.name, pokemonEntity.imageUrl)
+                    onFightPokemonClick(view, pokemonEntity)
 
 
                 } else {
