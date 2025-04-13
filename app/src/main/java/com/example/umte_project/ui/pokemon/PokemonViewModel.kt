@@ -73,6 +73,8 @@ class PokemonViewModel(application: Application) : AndroidViewModel(application)
         return minOf(100, pokemon.hp + healedHP)
     }
 
+
+
     fun refreshPokemonList() {
         viewModelScope.launch {
             val pokemons = pokemonDao.getAllPokemonOnce() // vytvoříme si níž
@@ -90,6 +92,12 @@ class PokemonViewModel(application: Application) : AndroidViewModel(application)
                     }
                 }
             }
+        }
+    }
+
+    fun updateIsFighter(id: Int, checked: Boolean) {
+        viewModelScope.launch {
+            pokemonDao.updateIsFighter(id, checked)
         }
     }
 }

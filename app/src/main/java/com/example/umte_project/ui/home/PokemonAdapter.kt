@@ -6,8 +6,14 @@ import com.bumptech.glide.Glide
 import com.example.umte_project.R
 import com.example.umte_project.data.PokemonEntity
 import com.example.umte_project.databinding.ItemPokemonBinding
+import com.example.umte_project.ui.pokemon.PokemonViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
-class PokemonAdapter(private var pokemonList: List<PokemonEntity>) :
+class PokemonAdapter(private var pokemonList: List<PokemonEntity>,
+                     private val pokemonViewModel: PokemonViewModel,
+                     private val lifecycleScope: CoroutineScope
+) :
     RecyclerView.Adapter<PokemonAdapter.PokemonViewHolder>() {
 
     inner class PokemonViewHolder(private val binding: ItemPokemonBinding) :
@@ -16,6 +22,16 @@ class PokemonAdapter(private var pokemonList: List<PokemonEntity>) :
             binding.textPokemonName.text = pokemon.name
             //binding.progressBarPokemonHP.visibility = View.GONE
             binding.progressBarPokemonHP.progress = pokemon.hp
+            binding.switchPokemonFighter.isChecked = pokemon.isFighter
+            binding.switchPokemonFighter.setOnCheckedChangeListener { _, isChecked ->
+                pokemon.isFighter = isChecked
+
+                // Aktualizuj fighter stav v databázi
+                lifecycleScope.launch {
+                    pokemonViewModel.updateIsFighter(pokemon.id, isChecked)
+                }
+
+            }
 
             Glide.with(binding.root)
                 .load(pokemon.imageUrl)
@@ -24,6 +40,8 @@ class PokemonAdapter(private var pokemonList: List<PokemonEntity>) :
                 .into(binding.imagePokemon)
         }
     }
+    
+    
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PokemonViewHolder {
         val binding = ItemPokemonBinding.inflate(LayoutInflater.from(parent.context), parent, false)

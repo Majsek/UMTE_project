@@ -31,4 +31,9 @@ interface PokemonDAO {
     @Query("SELECT * FROM pokemon_table")
     suspend fun getAllPokemonOnce(): List<PokemonEntity>
 
+    @Query("SELECT * FROM pokemon_table WHERE isFighter = 1")
+    suspend fun getFighterPokemon(): List<PokemonEntity>
+
+    @Query("UPDATE pokemon_table SET isFighter = :isFighter WHERE id = :id")
+    suspend fun updateIsFighter(id: Int, isFighter: Boolean)
 }

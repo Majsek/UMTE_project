@@ -12,8 +12,8 @@ data class PokemonEntity(
     val name: String,
     val imageUrl: String,
     var hp: Int = 100,
-    val lastUpdated: Long = System.currentTimeMillis()
-    //val speed: Int,
+    val lastUpdated: Long = System.currentTimeMillis(),
+    var isFighter: Boolean = false,
     //val attack: Int,
     //val defense: Int
 ) : Parcelable

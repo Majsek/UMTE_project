@@ -63,7 +63,7 @@ class HomeFragment : Fragment() {
         ).get(PokemonViewModel::class.java)
 
         // Nastavení RecyclerView
-        adapter = PokemonAdapter(emptyList())  // Prázdný seznam, aktualizuje se dynamicky
+        adapter = PokemonAdapter(emptyList(), pokemonViewModel, lifecycleScope)  // Prázdný seznam, aktualizuje se dynamicky
         binding.recyclerViewPokemon.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerViewPokemon.adapter = adapter
 
