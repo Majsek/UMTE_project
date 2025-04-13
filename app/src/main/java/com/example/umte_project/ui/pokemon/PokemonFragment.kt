@@ -146,9 +146,9 @@ class PokemonFragment : Fragment() {
 
                     binding.textPokemon.text = newText
 
-                    lifecycleScope.launch {
-                        pokemonViewModel.insertPokemon(pokemonEntity)
-                    }
+//                    lifecycleScope.launch {
+//                        pokemonViewModel.insertPokemon(pokemonEntity)
+//                    }
 
                     wildPokemonEntity = pokemonEntity
                     onFightPokemonClick(view, pokemonEntity)

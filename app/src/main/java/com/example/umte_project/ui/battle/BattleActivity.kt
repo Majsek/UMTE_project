@@ -85,9 +85,13 @@ class BattleActivity : AppCompatActivity() {
     private fun attackWildPokemon() {
         if (progressBarWild.progress > 10) {
             val damage = 8
-            progressBarWild.progress -= 9 // Snížení HP o 20
-            progressBarPlayer.progress -= damage // Snížení HP o 20
+
+            progressBarWild.progress = wildPokemon.hp
+            progressBarPlayer.progress = playerPokemon.hp
+
+            wildPokemon.hp = maxOf(0, wildPokemon.hp - damage)
             playerPokemon.hp = maxOf(0, playerPokemon.hp - damage)
+
             pokemonViewModel.updateHP(playerPokemon)
 
         }
@@ -103,6 +107,11 @@ class BattleActivity : AppCompatActivity() {
         if (progressBarWild.progress <= 10){
             battleText.text = "${playerPokemon.name} defeated ${wildPokemon.name}!"
             buttonAttack.text = "Catch ${wildPokemon.name}!"
+        }else{
+            if(playerPokemon.hp <= 0){
+                battleText.text = "${playerPokemon.name} fainted!"
+                buttonAttack.visibility = View.GONE
+            }
         }
     }//
 
