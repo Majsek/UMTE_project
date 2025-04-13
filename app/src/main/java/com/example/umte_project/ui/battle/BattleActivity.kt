@@ -69,7 +69,7 @@ class BattleActivity : AppCompatActivity() {
         progressBarWild.max = 100
         progressBarWild.progress = 100 // Wild Pokémon má plné HP
         progressBarPlayer.max = 100
-        progressBarPlayer.progress = 100 // Hráčův Pokémon má plné HP
+        progressBarPlayer.progress = playerPokemon.hp // Hráčův Pokémon
 
         // TODO: Nastavit obrázky Pokémonů podle jejich jména (můžeš použít Glide/Picasso nebo drawable)
         // imagePokemonWild.setImageResource(R.drawable.pokemon_wild)
@@ -84,8 +84,12 @@ class BattleActivity : AppCompatActivity() {
     // Simulace útoku na divokého Pokémona
     private fun attackWildPokemon() {
         if (progressBarWild.progress > 10) {
+            val damage = 8
             progressBarWild.progress -= 9 // Snížení HP o 20
-            progressBarPlayer.progress -= 8 // Snížení HP o 20
+            progressBarPlayer.progress -= damage // Snížení HP o 20
+            playerPokemon.hp = maxOf(0, playerPokemon.hp - damage)
+            pokemonViewModel.updateHP(playerPokemon)
+
         }
         else {
             insertPokemonIntoDatabase()

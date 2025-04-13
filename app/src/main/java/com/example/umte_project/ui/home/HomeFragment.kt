@@ -34,6 +34,14 @@ class HomeFragment : Fragment() {
                 startActivity(intent)
             }
         }
+
+        lifecycleScope.launch {
+            while (true) {
+                pokemonViewModel.refreshPokemonList()
+                kotlinx.coroutines.delay(1000)
+            }
+        }
+
     }
 
     private suspend fun getPokemonCountFromDatabase(): Int {

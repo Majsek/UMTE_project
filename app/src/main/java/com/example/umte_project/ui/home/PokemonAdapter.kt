@@ -14,6 +14,9 @@ class PokemonAdapter(private var pokemonList: List<PokemonEntity>) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(pokemon: PokemonEntity) {
             binding.textPokemonName.text = pokemon.name
+            //binding.progressBarPokemonHP.visibility = View.GONE
+            binding.progressBarPokemonHP.progress = pokemon.hp
+
             Glide.with(binding.root)
                 .load(pokemon.imageUrl)
                 .placeholder(R.drawable.placeholder)

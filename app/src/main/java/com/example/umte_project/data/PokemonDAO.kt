@@ -25,5 +25,10 @@ interface PokemonDAO {
     @Query("SELECT COUNT(*) FROM pokemon_table")
     suspend fun getPokemonCount(): Int
 
+    @Query("UPDATE pokemon_table SET hp = :hp, lastUpdated = :lastUpdated WHERE id = :id")
+    suspend fun updateHP(id: Int, hp: Int, lastUpdated: Long)
+
+    @Query("SELECT * FROM pokemon_table")
+    suspend fun getAllPokemonOnce(): List<PokemonEntity>
 
 }

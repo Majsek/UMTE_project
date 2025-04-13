@@ -23,6 +23,7 @@ class PokemonViewModel(application: Application) : AndroidViewModel(application)
 
         // Streamujeme změny z databáze přímo do LiveData
         pokemonList = pokemonDao.getAllPokemon().asLiveData()
+        refreshPokemonList() // automaticky při startu appky
     }
 
     private val _text = MutableLiveData<String>().apply {
@@ -44,6 +45,43 @@ class PokemonViewModel(application: Application) : AndroidViewModel(application)
     suspend fun getPokemonCount(): Int {
         return pokemonDao.getPokemonCount()
     }
+
+    fun updateHP(pokemon: PokemonEntity) {
+        viewModelScope.launch {
+            pokemonDao.updateHP(
+                id = pokemon.id,
+                hp = pokemon.hp,
+                lastUpdated = System.currentTimeMillis()
+            )
+        }
+    }
+
+    fun calculateHealedHP(pokemon: PokemonEntity): Int {
+        val now = System.currentTimeMillis()
+        val elapsedMillis = now - pokemon.lastUpdated
+
+        val elapsedSeconds = elapsedMillis / 1000
+        val healedHP = (elapsedSeconds * 1).toInt() // 1% za sekundu
+
+        return minOf(100, pokemon.hp + healedHP)
+    }
+
+    fun refreshPokemonList() {
+        viewModelScope.launch {
+            val pokemons = pokemonDao.getAllPokemonOnce() // vytvoříme si níž
+            pokemons.forEach { pokemon ->
+                val healedHP = calculateHealedHP(pokemon)
+                if (healedHP != pokemon.hp) {
+                    pokemonDao.updateHP(
+                        id = pokemon.id,
+                        hp = healedHP,
+                        lastUpdated = System.currentTimeMillis()
+                    )
+                }
+            }
+        }
+    }
+
 
 
 }
