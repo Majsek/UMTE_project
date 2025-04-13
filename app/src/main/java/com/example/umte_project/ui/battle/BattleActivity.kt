@@ -1,5 +1,7 @@
 package com.example.umte_project.ui.battle
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -87,6 +89,10 @@ class BattleActivity : AppCompatActivity() {
         }
         else {
             insertPokemonIntoDatabase()
+
+            val resultIntent = Intent()
+            resultIntent.putExtra("wasCaught", "true")
+            setResult(Activity.RESULT_OK, resultIntent)
             finish()
         }
 

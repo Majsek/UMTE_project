@@ -26,7 +26,7 @@ class PokemonViewModel(application: Application) : AndroidViewModel(application)
     }
 
     private val _text = MutableLiveData<String>().apply {
-        value = "This is Pokemon Fragment"
+        value = ""
     }
     val text: LiveData<String> = _text
 

@@ -1,5 +1,6 @@
 package com.example.umte_project.ui.pokemon
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,9 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.umte_project.R
 import com.example.umte_project.api.RetrofitClient
@@ -28,6 +32,28 @@ class PokemonFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var pokemonViewModel: PokemonViewModel
+    private lateinit var launcher: ActivityResultLauncher<Intent>
+
+    private lateinit var wildPokemonEntity: PokemonEntity
+    private var wasCaught: Boolean = false
+
+
+
+
+    override fun onCreate(savedInstanceState: Bundle?){
+        super.onCreate(savedInstanceState)
+
+        launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data = result.data?.getStringExtra("wasCaught")
+                wasCaught = data == "true"
+                updateText()
+
+            }
+        }
+    }
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,24 +89,40 @@ class PokemonFragment : Fragment() {
         return root
     }
 
+    private fun updateText() {
+        val newText = if (wasCaught) {
+            "You caught ${wildPokemonEntity.name}!"
+        }else{
+            "You let ${wildPokemonEntity.name} get away..."
+        }
+        binding.textPokemon.text = newText
+
+    }
+
     fun onFightPokemonClick(view: View, wildPokemonEntity: PokemonEntity) {
         lifecycleScope.launch {
+            updateText()
             val firstPokemon = pokemonViewModel.getFirstPokemon() // Získá prvního Pokémona
             val playerPokemonName = firstPokemon?.name ?: "Unknown"
+
 
             val intent = Intent(requireContext(), BattleActivity::class.java)
             intent.putExtra("wildPokemon", wildPokemonEntity) // Posíláme celou entitu!
             intent.putExtra("playerPokemon", firstPokemon) // Posíláme celou entitu hráčského Pokémona!
-            startActivity(intent)
+            //startActivity(intent)
+            launcher.launch(intent)
+            updateText()
+
+
         }
 
 
     }
 
     fun onGetPokemonButtonClick(view: View) {
-        binding.textPokemon.text = "Changed text!"
+        binding.textPokemon.text = "..."
         //We need to cast the view to a Button, because view itself does not have text property.
-        (view as Button).text = "Catch!"
+        (view as Button).text = "Prepare to fight!"
 
         val randomId = (1..1010).random()
         val pokemonName = randomId.toString()
@@ -108,7 +150,9 @@ class PokemonFragment : Fragment() {
                         pokemonViewModel.insertPokemon(pokemonEntity)
                     }
 
+                    wildPokemonEntity = pokemonEntity
                     onFightPokemonClick(view, pokemonEntity)
+                    view.text = "Search for pokémon!"
 
 
                 } else {
