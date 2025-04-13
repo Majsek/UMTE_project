@@ -2,17 +2,21 @@ package com.example.umte_project.ui.pokemon
 
 import android.app.Application
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.umte_project.MainActivity
 import com.example.umte_project.data.PokemonDAO
 import com.example.umte_project.data.PokemonDatabase
 import com.example.umte_project.data.PokemonEntity
 import com.example.umte_project.data.PokemonJSON
+import com.example.umte_project.utils.PokemonHealWorker
 import kotlinx.coroutines.launch
 
 class PokemonViewModel(application: Application) : AndroidViewModel(application) {
@@ -82,26 +86,10 @@ class PokemonViewModel(application: Application) : AndroidViewModel(application)
                     )
 
                     if (healedHP == 100 && pokemon.hp < 100) {
-                        sendHealedNotification(pokemon.name)
+                        PokemonHealWorker.sendHealedNotification(getApplication(),pokemon.name)
                     }
                 }
             }
         }
     }
-
-    private fun sendHealedNotification(pokemonName: String) {
-        val notificationManager = getApplication<Application>()
-            .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        val builder = NotificationCompat.Builder(getApplication(), "HEAL_CHANNEL")
-            .setSmallIcon(android.R.drawable.star_on)
-            .setContentTitle("Pokémon is fully healed!")
-            .setContentText("$pokemonName is now at 100% HP 🎉")
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-
-        notificationManager.notify(pokemonName.hashCode(), builder.build())
-    }
-
-
-
 }
