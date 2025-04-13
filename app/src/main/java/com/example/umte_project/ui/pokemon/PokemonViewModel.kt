@@ -1,6 +1,9 @@
 package com.example.umte_project.ui.pokemon
 
 import android.app.Application
+import android.app.NotificationManager
+import android.content.Context
+import androidx.core.app.NotificationCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -61,7 +64,7 @@ class PokemonViewModel(application: Application) : AndroidViewModel(application)
         val elapsedMillis = now - pokemon.lastUpdated
 
         val elapsedSeconds = elapsedMillis / 1000
-        val healedHP = (elapsedSeconds * 1).toInt() // 1% za sekundu
+        val healedHP = (elapsedSeconds * 5).toInt() // 5% za sekundu
 
         return minOf(100, pokemon.hp + healedHP)
     }
@@ -77,9 +80,26 @@ class PokemonViewModel(application: Application) : AndroidViewModel(application)
                         hp = healedHP,
                         lastUpdated = System.currentTimeMillis()
                     )
+
+                    if (healedHP == 100 && pokemon.hp < 100) {
+                        sendHealedNotification(pokemon.name)
+                    }
                 }
             }
         }
+    }
+
+    private fun sendHealedNotification(pokemonName: String) {
+        val notificationManager = getApplication<Application>()
+            .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        val builder = NotificationCompat.Builder(getApplication(), "HEAL_CHANNEL")
+            .setSmallIcon(android.R.drawable.star_on)
+            .setContentTitle("Pokémon is fully healed!")
+            .setContentText("$pokemonName is now at 100% HP 🎉")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+        notificationManager.notify(pokemonName.hashCode(), builder.build())
     }
 
 
