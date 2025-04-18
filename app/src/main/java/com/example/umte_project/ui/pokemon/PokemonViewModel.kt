@@ -23,6 +23,8 @@ class PokemonViewModel(application: Application) : AndroidViewModel(application)
     private val pokemonDao: PokemonDAO
 
     val pokemonList: LiveData<List<PokemonEntity>>
+    val fighterPokemonList: LiveData<List<PokemonEntity>>
+
 
     init {
         val database = PokemonDatabase.getDatabase(application)
@@ -31,6 +33,9 @@ class PokemonViewModel(application: Application) : AndroidViewModel(application)
         // Streamujeme změny z databáze přímo do LiveData
         pokemonList = pokemonDao.getAllPokemon().asLiveData()
         refreshPokemonList() // automaticky při startu appky
+
+        fighterPokemonList = pokemonDao.getAllFighterPokemon().asLiveData()
+
     }
 
     private val _text = MutableLiveData<String>().apply {
@@ -99,5 +104,9 @@ class PokemonViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch {
             pokemonDao.updateIsFighter(id, checked)
         }
+    }
+
+    fun getAllFighterPokemon(): LiveData<List<PokemonEntity>> {
+        return pokemonDao.getAllFighterPokemon().asLiveData()
     }
 }

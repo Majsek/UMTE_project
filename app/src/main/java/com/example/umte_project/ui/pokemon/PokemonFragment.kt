@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -37,7 +38,7 @@ class PokemonFragment : Fragment() {
     private lateinit var wildPokemonEntity: PokemonEntity
     private var wasCaught: Boolean = false
 
-
+    private lateinit var fighterPokemonList: LiveData<List<PokemonEntity>>
 
 
     override fun onCreate(savedInstanceState: Bundle?){
@@ -103,12 +104,14 @@ class PokemonFragment : Fragment() {
         lifecycleScope.launch {
             updateText()
             val firstPokemon = pokemonViewModel.getFirstPokemon() // Získá prvního Pokémona
-            val playerPokemonName = firstPokemon?.name ?: "Unknown"
+
+            fighterPokemonList = pokemonViewModel.getAllFighterPokemon()
 
 
             val intent = Intent(requireContext(), BattleActivity::class.java)
             intent.putExtra("wildPokemon", wildPokemonEntity) // Posíláme celou entitu!
             intent.putExtra("playerPokemon", firstPokemon) // Posíláme celou entitu hráčského Pokémona!
+            //intent.putExtra("playerPokemon", fighterPokemonList) // Posíláme celou entitu hráčského Pokémona!
             //startActivity(intent)
             launcher.launch(intent)
             updateText()
