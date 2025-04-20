@@ -3,6 +3,7 @@ package com.example.umte_project.ui.pokemon
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +12,6 @@ import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -37,6 +37,7 @@ class PokemonFragment : Fragment() {
 
     private lateinit var wildPokemonEntity: PokemonEntity
     private var wasCaught: Boolean = false
+    private var pokemonLoaded: Boolean = false
 
     private var fighterSize:Int = 0
 
@@ -95,6 +96,8 @@ class PokemonFragment : Fragment() {
 
         pokemonViewModel.fighterPokemonList.observe(viewLifecycleOwner) { fighters ->
             fighterSize = fighters.size
+            if (!pokemonLoaded) {
+
             if (fighters.isEmpty()) {
                 binding.textPokemon.text = "You have no fighters!"
                 binding.buttonGetPokemon.text = "Assign a Pokémon as a fighter first!"
@@ -105,7 +108,11 @@ class PokemonFragment : Fragment() {
                     binding.textPokemon.text = "You have ${fighters.size} selected fighters!"
                 }
             }
+            }
         }
+
+
+
 
 
 
@@ -167,6 +174,7 @@ class PokemonFragment : Fragment() {
                     //val imageUrl = "${pokemon?.sprites?.other?.home?.front_default}"
                     loadPokemonImage(imageUrl)
 
+
                     val pokemonEntity = PokemonEntity(
                         id = pokemon?.id ?: 0, // Zajištění, že id není null
                         name = pokemon?.name ?: "Unknown", // Zajištění, že name není null
@@ -206,6 +214,7 @@ class PokemonFragment : Fragment() {
             .placeholder(R.drawable.placeholder) // when the image is loading
             .error(R.drawable.error) // when the image cant load
             .into(binding.imagePokemon)
+        pokemonLoaded = true
     }
 
     override fun onDestroyView() {

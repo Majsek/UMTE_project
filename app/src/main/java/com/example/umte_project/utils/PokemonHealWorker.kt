@@ -10,6 +10,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.umte_project.MainActivity
 import com.example.umte_project.data.PokemonDatabase
+import com.example.umte_project.ui.notifications.NotificationsViewModel
 import dagger.hilt.android.internal.Contexts.getApplication
 
 class PokemonHealWorker(
@@ -66,6 +67,10 @@ class PokemonHealWorker(
                 .setContentIntent(pendingIntent) // <- Tady to přidáš
                 .setAutoCancel(true) // Notifikace zmizí po kliknutí
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+            val notificationViewModel = NotificationsViewModel(application = Application())
+            notificationViewModel.addNotification("$pokemonName is now at 100% HP 🎉")
+
 
             val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.notify(pokemonName.hashCode(), builder.build())
