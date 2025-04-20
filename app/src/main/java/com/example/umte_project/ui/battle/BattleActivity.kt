@@ -2,14 +2,18 @@ package com.example.umte_project.ui.battle
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.umte_project.R
@@ -31,8 +35,18 @@ class BattleActivity : AppCompatActivity() {
     private lateinit var buttonAttack: Button
 
     private lateinit var wildPokemon: PokemonEntity
-    private lateinit var playerPokemon: PokemonEntity
+    private lateinit var playerPokemon1: PokemonEntity
+    private lateinit var playerPokemon2: PokemonEntity
+    private lateinit var playerPokemon3: PokemonEntity
+    private lateinit var playerPokemon4: PokemonEntity
+    private lateinit var playerPokemon5: PokemonEntity
 
+    private var fighterIndex = 0
+
+    private lateinit var playerFighters: ArrayList<PokemonEntity>
+
+
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_battle)
@@ -52,47 +66,61 @@ class BattleActivity : AppCompatActivity() {
         imagePokemonPlayer = findViewById(R.id.image_pokemon_player)
         buttonAttack = findViewById(R.id.button_attack)
 
-        // Získání údajů o Pokémonech
+
+        // Získání údajů wildPokemon
         wildPokemon = intent.getParcelableExtra("wildPokemon")!!
-        playerPokemon = intent.getParcelableExtra("playerPokemon")!!
-
-
-        if (wildPokemon != null && playerPokemon != null) {
-            battleText.text = "${playerPokemon.name} VS ${wildPokemon.name}!"
-
-            // Načti obrázky pomocí Glide
-            loadPokemonImage(wildPokemon.imageUrl, imagePokemonWild)
-            loadPokemonImage(playerPokemon.imageUrl, imagePokemonPlayer)
-        }
-
-        // Nastavení defaultních hodnot progress barů (HP)
         progressBarWild.max = 100
         progressBarWild.progress = 100 // Wild Pokémon má plné HP
         progressBarPlayer.max = 100
-        progressBarPlayer.progress = playerPokemon.hp // Hráčův Pokémon
 
-        // TODO: Nastavit obrázky Pokémonů podle jejich jména (můžeš použít Glide/Picasso nebo drawable)
-        // imagePokemonWild.setImageResource(R.drawable.pokemon_wild)
-        // imagePokemonPlayer.setImageResource(R.drawable.pokemon_player)
+        pokemonViewModel.fighterPokemonList.observe(this) { fighters ->
+            playerFighters = fighters as ArrayList<PokemonEntity>
+
+        if (wildPokemon != null) {
+            // Načti obrázky pomocí Glide
+            loadPokemonImage(wildPokemon.imageUrl, imagePokemonWild)
+
+            loadNextFighter()
+
+//            battleText.text = "${playerFighters.get(fighterIndex).name} VS ${wildPokemon.name}!"
+//            loadPokemonImage(playerFighters.get(fighterIndex).imageUrl, imagePokemonPlayer)
+//            progressBarPlayer.progress = playerFighters.get(fighterIndex).hp
+        }
+
+
+
 
         // Event listener na tlačítko útoku
         buttonAttack.setOnClickListener {
             attackWildPokemon()
         }
+        }
+    }
+
+    private fun loadNextFighter(){
+        if(fighterIndex >= playerFighters.size) {
+            return
+        }
+        battleText.text = "${playerFighters.get(fighterIndex).name} VS ${wildPokemon.name}!"
+        loadPokemonImage(playerFighters.get(fighterIndex).imageUrl, imagePokemonPlayer)
+        progressBarPlayer.progress = playerFighters.get(fighterIndex).hp
     }
 
     // Simulace útoku na divokého Pokémona
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     private fun attackWildPokemon() {
         if (progressBarWild.progress > 10) {
             val damage = 8
 
-            progressBarWild.progress = wildPokemon.hp
-            progressBarPlayer.progress = playerPokemon.hp
-
             wildPokemon.hp = maxOf(0, wildPokemon.hp - damage)
-            playerPokemon.hp = maxOf(0, playerPokemon.hp - damage)
+            playerFighters.get(fighterIndex).hp = maxOf(0, playerFighters.get(fighterIndex).hp - damage)
 
-            pokemonViewModel.updateHP(playerPokemon)
+            progressBarWild.progress = wildPokemon.hp
+            progressBarPlayer.progress = playerFighters.get(fighterIndex).hp
+
+
+
+            pokemonViewModel.updateHP(playerFighters.get(fighterIndex))
 
         }
         else {
@@ -105,12 +133,31 @@ class BattleActivity : AppCompatActivity() {
         }
 
         if (progressBarWild.progress <= 10){
-            battleText.text = "${playerPokemon.name} defeated ${wildPokemon.name}!"
+            battleText.text = "${playerFighters.get(fighterIndex).name} defeated ${wildPokemon.name}!"
             buttonAttack.text = "Catch ${wildPokemon.name}!"
         }else{
-            if(playerPokemon.hp <= 0){
-                battleText.text = "${playerPokemon.name} fainted!"
-                buttonAttack.visibility = View.GONE
+            if(playerFighters.get(fighterIndex).hp <= 5){
+                battleText.text = "${playerFighters.get(fighterIndex).name} fainted!"
+
+                Log.d("TAG", "PŘED ZVÝŠENÍM:")
+                Log.d("TAG", "Hodnota fighterIndex: $fighterIndex")
+                Log.d("TAG","Velikost seznamu: ${playerFighters.size}")
+                fighterIndex++
+                Log.d("TAG", "PO ZVÝŠENÍM:")
+                Log.d("TAG", "Hodnota fighterIndex: $fighterIndex")
+                Log.d("TAG","Velikost seznamu: ${playerFighters.size}")
+
+                if(fighterIndex >= playerFighters.size) {
+                    Log.d("TAG","Vypni se!")
+                    val resultIntent = Intent()
+                    resultIntent.putExtra("wasCaught", "false")
+                    setResult(Activity.RESULT_OK, resultIntent)
+                    finish()
+                } else{
+                    Log.d("TAG","Načti dalšího")
+                    loadNextFighter()
+                }
+                //buttonAttack.visibility = View.GONE
             }
         }
     }//
@@ -121,6 +168,8 @@ class BattleActivity : AppCompatActivity() {
             battleText.text = "${wildPokemon.name} byl chycen!"
         }
     }
+
+
 
 
     private fun loadPokemonImage(url: String, imageView: ImageView) {

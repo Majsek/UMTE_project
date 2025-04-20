@@ -38,8 +38,7 @@ class PokemonFragment : Fragment() {
     private lateinit var wildPokemonEntity: PokemonEntity
     private var wasCaught: Boolean = false
 
-    private lateinit var fighterPokemonList: LiveData<List<PokemonEntity>>
-
+    private var fighterSize:Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
@@ -86,9 +85,35 @@ class PokemonFragment : Fragment() {
 //             pokemons.joinToString("\n") { it.name }
 //        }
 
+//        var playerFighters = ArrayList<PokemonEntity>()
+//        pokemonViewModel.fighterPokemonList.observe(viewLifecycleOwner) { fighters ->
+//            playerFighters = fighters as ArrayList<PokemonEntity>
+//        }
+//        if (playerFighters.size == 0){
+//            binding.textPokemon.text = "You have no fighters!"
+//        }
+
+        pokemonViewModel.fighterPokemonList.observe(viewLifecycleOwner) { fighters ->
+            fighterSize = fighters.size
+            if (fighters.isEmpty()) {
+                binding.textPokemon.text = "You have no fighters!"
+                binding.buttonGetPokemon.text = "Assign a Pokémon as a fighter first!"
+            } else {
+                if (fighters.size == 1) {
+                    binding.textPokemon.text = "You have ${fighters.size} selected fighter!"
+                } else {
+                    binding.textPokemon.text = "You have ${fighters.size} selected fighters!"
+                }
+            }
+        }
+
+
+
 
         return root
     }
+
+
 
     private fun updateText() {
         val newText = if (wasCaught) {
@@ -103,26 +128,27 @@ class PokemonFragment : Fragment() {
     fun onFightPokemonClick(view: View, wildPokemonEntity: PokemonEntity) {
         lifecycleScope.launch {
             updateText()
-            val firstPokemon = pokemonViewModel.getFirstPokemon() // Získá prvního Pokémona
-
-            fighterPokemonList = pokemonViewModel.getAllFighterPokemon()
-
 
             val intent = Intent(requireContext(), BattleActivity::class.java)
             intent.putExtra("wildPokemon", wildPokemonEntity) // Posíláme celou entitu!
-            intent.putExtra("playerPokemon", firstPokemon) // Posíláme celou entitu hráčského Pokémona!
+
             //intent.putExtra("playerPokemon", fighterPokemonList) // Posíláme celou entitu hráčského Pokémona!
             //startActivity(intent)
             launcher.launch(intent)
             updateText()
-
-
         }
 
 
     }
 
     fun onGetPokemonButtonClick(view: View) {
+        if (fighterSize == 0){
+
+            findNavController().navigate(R.id.navigation_home)
+            return
+        }
+
+
         binding.textPokemon.text = "..."
         //We need to cast the view to a Button, because view itself does not have text property.
         (view as Button).text = "Prepare to fight!"
