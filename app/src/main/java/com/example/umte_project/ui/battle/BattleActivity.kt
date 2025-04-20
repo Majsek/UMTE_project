@@ -35,11 +35,6 @@ class BattleActivity : AppCompatActivity() {
     private lateinit var buttonAttack: Button
 
     private lateinit var wildPokemon: PokemonEntity
-    private lateinit var playerPokemon1: PokemonEntity
-    private lateinit var playerPokemon2: PokemonEntity
-    private lateinit var playerPokemon3: PokemonEntity
-    private lateinit var playerPokemon4: PokemonEntity
-    private lateinit var playerPokemon5: PokemonEntity
 
     private var fighterIndex = 0
 
@@ -112,7 +107,7 @@ class BattleActivity : AppCompatActivity() {
         if (progressBarWild.progress > 10) {
             val damage = 8
 
-            wildPokemon.hp = maxOf(0, wildPokemon.hp - damage)
+            wildPokemon.hp = maxOf(0, wildPokemon.hp - damage*10)
             playerFighters.get(fighterIndex).hp = maxOf(0, playerFighters.get(fighterIndex).hp - damage)
 
             progressBarWild.progress = wildPokemon.hp

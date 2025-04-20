@@ -1,6 +1,7 @@
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.umte_project.R
@@ -22,15 +23,28 @@ class PokemonAdapter(private var pokemonList: List<PokemonEntity>,
             binding.textPokemonName.text = pokemon.name
             //binding.progressBarPokemonHP.visibility = View.GONE
             binding.progressBarPokemonHP.progress = pokemon.hp
+
+            // ZRUŠ starý listener
+            binding.switchPokemonFighter.setOnCheckedChangeListener(null)
             binding.switchPokemonFighter.isChecked = pokemon.isFighter
+
+            // NASTAV nový listener
             binding.switchPokemonFighter.setOnCheckedChangeListener { _, isChecked ->
+                lifecycleScope.launch {
+                val count = pokemonViewModel.getFighterCount()
+                if (isChecked && count >= 5) {
+                    Toast.makeText(binding.root.context, "You can only assign 5 fighters!", Toast.LENGTH_SHORT).show()
+                    binding.switchPokemonFighter.isChecked = false
+                    return@launch
+                }
+
                 pokemon.isFighter = isChecked
 
                 // Aktualizuj fighter stav v databázi
                 lifecycleScope.launch {
                     pokemonViewModel.updateIsFighter(pokemon.id, isChecked)
                 }
-
+}
             }
 
             Glide.with(binding.root)

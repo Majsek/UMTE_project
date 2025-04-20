@@ -109,4 +109,9 @@ class PokemonViewModel(application: Application) : AndroidViewModel(application)
     fun getAllFighterPokemon(): LiveData<List<PokemonEntity>> {
         return pokemonDao.getAllFighterPokemon().asLiveData()
     }
+
+    suspend fun getFighterCount(): Int {
+        return pokemonDao.countFighters()
+    }
+
 }
