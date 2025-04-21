@@ -39,4 +39,6 @@ interface PokemonDAO {
     @Query("SELECT COUNT(*) FROM pokemon_table WHERE isFighter = 1")
     suspend fun countFighters(): Int
 
+    @Query("UPDATE pokemon_table SET lastUpdated = :lastUpdated WHERE id = :id")
+    suspend fun updateLastUpdated(id: Int, lastUpdated: Long)
 }

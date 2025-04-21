@@ -4,12 +4,16 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.view.Gravity
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -20,7 +24,9 @@ import com.example.umte_project.R
 import com.example.umte_project.data.PokemonEntity
 import com.example.umte_project.databinding.FragmentPokemonBinding
 import com.example.umte_project.ui.pokemon.PokemonViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 class BattleActivity : AppCompatActivity() {
     // ViewModel pro práci s databází
@@ -92,6 +98,30 @@ class BattleActivity : AppCompatActivity() {
         }
     }
 
+
+    private fun calculateAttackDamage(): Int {
+        val baseDamage = Random.nextInt(5, 16) // Damage 5–15
+        val critChance = 0.2
+        val missChance = 0.1
+
+        val roll = Random.nextDouble()
+
+        return when {
+            roll < missChance -> {
+                Log.d("Battle", "Attack missed!")
+                0
+            }
+            roll < missChance + critChance -> {
+                Log.d("Battle", "Critical hit! Damage: ${baseDamage * 2}")
+                baseDamage * 2
+            }
+            else -> {
+                Log.d("Battle", "Normal hit. Damage: $baseDamage")
+                baseDamage
+            }
+        }
+    }
+
     private fun loadNextFighter(){
         if(fighterIndex >= playerFighters.size) {
             return
@@ -105,17 +135,66 @@ class BattleActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     private fun attackWildPokemon() {
         if (progressBarWild.progress > 10) {
-            val damage = 8
-
-            wildPokemon.hp = maxOf(0, wildPokemon.hp - damage*10)
-            playerFighters.get(fighterIndex).hp = maxOf(0, playerFighters.get(fighterIndex).hp - damage)
-
-            progressBarWild.progress = wildPokemon.hp
-            progressBarPlayer.progress = playerFighters.get(fighterIndex).hp
+//            val playerDamage = calculateAttackDamage()
+//            val wildDamage = calculateAttackDamage()
 
 
+            lifecycleScope.launch {
+                // 1. Hráč útočí
+                val playerDamage = calculateAttackDamage()
+                bumpView(imagePokemonPlayer)
+                delay(100L)
+                shakeView(imagePokemonWild)
+                wildPokemon.hp = maxOf(0, wildPokemon.hp - playerDamage)
+                progressBarWild.progress = wildPokemon.hp
+                buttonAttack.visibility = View.GONE
 
-            pokemonViewModel.updateHP(playerFighters.get(fighterIndex))
+                val toast = Toast.makeText(this@BattleActivity, "${playerFighters.get(fighterIndex).name} dealt $playerDamage damage!", Toast.LENGTH_SHORT)
+                toast.setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL, 0, 200)
+                toast.show()
+                Handler(Looper.getMainLooper()).postDelayed({
+                    toast.cancel()
+                }, 300) // zruší toast po 0.3 sekundách
+
+
+                // 2. Počkej 1 sekundu
+                delay(600L)
+
+
+                // 3. Wild Pokémon útočí (pokud ještě žije)
+                if (wildPokemon.hp > 1) {
+                    val wildDamage = calculateAttackDamage()
+
+                    bumpView(imagePokemonWild)
+                    delay(100L)
+                    shakeView(imagePokemonPlayer)
+                    playerFighters[fighterIndex].hp = maxOf(0, playerFighters[fighterIndex].hp - wildDamage)
+                    progressBarPlayer.progress = playerFighters.get(fighterIndex).hp
+
+                    pokemonViewModel.updateHP(playerFighters.get(fighterIndex))
+
+                    val toast = Toast.makeText(this@BattleActivity, "${wildPokemon.name} dealt $wildDamage damage!", Toast.LENGTH_SHORT)
+                    toast.setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL, 200, 800)
+                    toast.show()
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        toast.cancel()
+                    }, 300) // zruší toast po 0.3 sekundách
+                    delay(400L)
+                }
+                buttonAttack.visibility = View.VISIBLE
+            }
+
+
+
+
+//            wildPokemon.hp = maxOf(0, wildPokemon.hp - playerDamage)
+//            shakeView(imagePokemonWild) // Když hráč útočí
+//            bumpView(imagePokemonWild)
+//            playerFighters.get(fighterIndex).hp = maxOf(0, playerFighters.get(fighterIndex).hp - wildDamage)
+//            shakeView(imagePokemonPlayer) // Když wild útočí
+//            bumpView(imagePokemonPlayer)
+
+
 
         }
         else {
@@ -133,6 +212,7 @@ class BattleActivity : AppCompatActivity() {
         }else{
             if(playerFighters.get(fighterIndex).hp <= 5){
                 battleText.text = "${playerFighters.get(fighterIndex).name} fainted!"
+                Toast.makeText(this, "${playerFighters.get(fighterIndex).name} fainted!", Toast.LENGTH_SHORT).show()
 
                 Log.d("TAG", "PŘED ZVÝŠENÍM:")
                 Log.d("TAG", "Hodnota fighterIndex: $fighterIndex")
@@ -156,6 +236,40 @@ class BattleActivity : AppCompatActivity() {
             }
         }
     }//
+
+    fun shakeView(view: View) {
+        view.animate()
+            .translationXBy(10f)
+            .setDuration(50)
+            .withEndAction {
+                view.animate()
+                    .translationXBy(-20f)
+                    .setDuration(100)
+                    .withEndAction {
+                        view.animate()
+                            .translationXBy(10f)
+                            .setDuration(50)
+                            .start()
+                    }
+                    .start()
+            }
+            .start()
+    }
+
+    fun bumpView(view: View) {
+        view.animate()
+            .scaleX(1.2f).scaleY(1.2f)
+            .setDuration(100)
+            .withEndAction {
+                view.animate()
+                    .scaleX(1f).scaleY(1f)
+                    .setDuration(100)
+                    .start()
+            }
+            .start()
+    }
+
+
 
     private fun insertPokemonIntoDatabase() {
         lifecycleScope.launch {

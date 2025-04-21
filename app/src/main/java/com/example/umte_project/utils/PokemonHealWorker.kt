@@ -27,7 +27,12 @@ class PokemonHealWorker(
 
         for (pokemon in pokemons) {
             val elapsedSeconds = (now - pokemon.lastUpdated) / 1000
-            val healedHP = (elapsedSeconds * 1).toInt()
+
+            var healedHP = 0
+            if (!pokemon.isFighter) {
+                healedHP = (elapsedSeconds * 1).toInt()
+            }
+
             val newHP = minOf(100, pokemon.hp + healedHP)
 
             if (newHP > pokemon.hp) {

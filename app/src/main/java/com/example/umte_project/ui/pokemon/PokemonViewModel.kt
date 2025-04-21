@@ -84,6 +84,11 @@ class PokemonViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch {
             val pokemons = pokemonDao.getAllPokemonOnce() // vytvoříme si níž
             pokemons.forEach { pokemon ->
+
+                if (pokemon.isFighter){
+                    return@forEach
+                }
+
                 val healedHP = calculateHealedHP(pokemon)
                 if (healedHP != pokemon.hp) {
                     pokemonDao.updateHP(
@@ -103,6 +108,10 @@ class PokemonViewModel(application: Application) : AndroidViewModel(application)
     fun updateIsFighter(id: Int, checked: Boolean) {
         viewModelScope.launch {
             pokemonDao.updateIsFighter(id, checked)
+            pokemonDao.updateLastUpdated(
+                id,
+                lastUpdated = System.currentTimeMillis()
+            )
         }
     }
 

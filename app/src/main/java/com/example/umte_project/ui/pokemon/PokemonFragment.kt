@@ -129,6 +129,7 @@ class PokemonFragment : Fragment() {
             "You let ${wildPokemonEntity.name} get away..."
         }
         binding.textPokemon.text = newText
+        binding.buttonGetPokemon.visibility = View.VISIBLE
 
     }
 
@@ -206,6 +207,7 @@ class PokemonFragment : Fragment() {
 
 
         })
+        (view as Button).visibility = View.GONE
     }
 
     fun loadPokemonImage(url: String) {
