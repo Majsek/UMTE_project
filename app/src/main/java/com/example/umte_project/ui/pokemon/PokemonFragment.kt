@@ -178,7 +178,7 @@ class PokemonFragment : Fragment() {
 
                     val pokemonEntity = PokemonEntity(
                         id = pokemon?.id ?: 0, // Zajištění, že id není null
-                        name = pokemon?.name ?: "Unknown", // Zajištění, že name není null
+                        name = pokemon?.name?.replaceFirstChar { it.uppercase() } ?: "Unknown", // Zajištění, že name není null
                         imageUrl = imageUrl // Zde můžeš použít imageUrl, pokud chceš uložit URL obrázku
                     )
 

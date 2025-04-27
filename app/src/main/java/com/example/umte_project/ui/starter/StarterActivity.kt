@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.Locale
 
 class StarterActivity : AppCompatActivity() {
 
@@ -58,7 +59,11 @@ class StarterActivity : AppCompatActivity() {
                     val pokemon = response.body()
                     if (pokemon != null) {
                         val imageUrl = pokemon.sprites.other.officialArtwork.frontDefault
-                        button.text = pokemon.name.capitalize()
+                        button.text = pokemon.name.replaceFirstChar {
+                            if (it.isLowerCase()) it.titlecase(
+                                Locale.ROOT
+                            ) else it.toString()
+                        }
                         Glide.with(this@StarterActivity).load(imageUrl).into(imageView)
 
                         button.setOnClickListener {
@@ -76,7 +81,7 @@ class StarterActivity : AppCompatActivity() {
 
     private fun selectStarter(pokemonName: String, imageUrl: String) {
         lifecycleScope.launch {
-            val starterPokemon = PokemonEntity(name = pokemonName, imageUrl = imageUrl)
+            val starterPokemon = PokemonEntity(name = pokemonName.replaceFirstChar { it.uppercase() }, imageUrl = imageUrl)
             val database = PokemonDatabase.getDatabase(this@StarterActivity).pokemonDao()
             database.insertPokemon(starterPokemon)
 
