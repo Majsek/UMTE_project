@@ -176,7 +176,7 @@ class BattleActivity : AppCompatActivity() {
                 if (wildPokemon.hp > 1) {
                     val wildDamage = calculateAttackDamage()
 
-                    bumpView(imagePokemonWild)
+                    bumpView(imagePokemonWild, -1f)
                     delay(100L)
                     shakeView(imagePokemonPlayer)
                     playerFighters[fighterIndex].hp = maxOf(0, playerFighters[fighterIndex].hp - wildDamage)
@@ -267,13 +267,17 @@ class BattleActivity : AppCompatActivity() {
             .start()
     }
 
-    fun bumpView(view: View) {
+    fun bumpView(view: View, isEnemy : Float = 1f) {
         view.animate()
             .scaleX(1.2f).scaleY(1.2f)
+            .translationX(290f * isEnemy)
+            .translationY(-290f * isEnemy)
             .setDuration(100)
             .withEndAction {
                 view.animate()
                     .scaleX(1f).scaleY(1f)
+                    .translationX(0f)
+                    .translationY(0f)
                     .setDuration(100)
                     .start()
             }

@@ -16,13 +16,15 @@
         android:padding="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        android:clipChildren="false">>
 
         <LinearLayout
             android:id="@+id/wild"
             android:layout_width="match_parent"
             android:layout_height="201dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:clipChildren="false">>
 
             <LinearLayout
                 android:layout_width="188dp"
@@ -32,7 +34,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:clipChildren="false">
 
                 <ProgressBar
                     android:id="@+id/progressBar_wild"
@@ -73,12 +76,14 @@
             android:id="@+id/player"
             android:layout_width="match_parent"
             android:layout_height="175dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:clipChildren="false">
 
             <LinearLayout
                 android:layout_width="188dp"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:clipChildren="false">
 
                 <ProgressBar
                     android:id="@+id/progressBar_player"
