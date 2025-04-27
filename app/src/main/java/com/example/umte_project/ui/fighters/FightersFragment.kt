@@ -47,6 +47,20 @@ class FightersFragment : Fragment() {
             adapter.updateData(pokemons)
         }
 
+        pokemonViewModel.fighterPokemonList.observe(viewLifecycleOwner) { fighters ->
+            if (fighters.isEmpty()) {
+                binding.textFighters.visibility = View.VISIBLE
+                binding.textFighters.text = "You have no assigned fighters."
+                binding.recyclerViewFighters.visibility = View.GONE
+            } else {
+                binding.textFighters.visibility = View.VISIBLE
+                binding.recyclerViewFighters.visibility = View.VISIBLE
+                binding.textFighters.text = "Unassign wounded fighters to let them heal."
+                adapter.updateData(fighters) // nebo jak máš jméno adapteru
+            }
+        }
+
+
         return root
     }
 

@@ -149,9 +149,20 @@ class BattleActivity : AppCompatActivity() {
                 progressBarWild.progress = wildPokemon.hp
                 buttonAttack.visibility = View.GONE
 
-                val toast = Toast.makeText(this@BattleActivity, "${playerFighters.get(fighterIndex).name} dealt $playerDamage damage!", Toast.LENGTH_SHORT)
-                toast.setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL, 0, 200)
-                toast.show()
+
+                var toast : Toast
+                if (fighterIndex in playerFighters.indices) {
+                    toast = Toast.makeText(this@BattleActivity, "${playerFighters[fighterIndex].name} dealt $playerDamage damage!", Toast.LENGTH_SHORT)
+                    toast.show()
+                } else {
+                    toast = Toast.makeText(this@BattleActivity, "No fighter available!", Toast.LENGTH_SHORT)
+                    toast.show()
+                }
+
+
+//                val toast = Toast.makeText(this@BattleActivity, "${playerFighters.get(fighterIndex).name} dealt $playerDamage damage!", Toast.LENGTH_SHORT)
+//                toast.setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL, 0, 200)
+//                toast.show()
                 Handler(Looper.getMainLooper()).postDelayed({
                     toast.cancel()
                 }, 300) // zruší toast po 0.3 sekundách
@@ -165,7 +176,7 @@ class BattleActivity : AppCompatActivity() {
                 if (wildPokemon.hp > 1) {
                     val wildDamage = calculateAttackDamage()
 
-                    bumpView(imagePokemonWild)
+                    bumpView(imagePokemonWild, -1f)
                     delay(100L)
                     shakeView(imagePokemonPlayer)
                     playerFighters[fighterIndex].hp = maxOf(0, playerFighters[fighterIndex].hp - wildDamage)
@@ -256,13 +267,17 @@ class BattleActivity : AppCompatActivity() {
             .start()
     }
 
-    fun bumpView(view: View) {
+    fun bumpView(view: View, isEnemy : Float = 1f) {
         view.animate()
             .scaleX(1.2f).scaleY(1.2f)
+            .translationX(290f * isEnemy)
+            .translationY(-290f * isEnemy)
             .setDuration(100)
             .withEndAction {
                 view.animate()
                     .scaleX(1f).scaleY(1f)
+                    .translationX(0f)
+                    .translationY(0f)
                     .setDuration(100)
                     .start()
             }
