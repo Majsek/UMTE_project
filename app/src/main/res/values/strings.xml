@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">UMTE_project</string>
     <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
+    <string name="title_fighters">Fighters</string>
     <string name="title_notifications">Notifications</string>
     <string name="title_pokemon">Pokemon</string>
     <string name="get_pokemon">Search for Pokémon!</string>

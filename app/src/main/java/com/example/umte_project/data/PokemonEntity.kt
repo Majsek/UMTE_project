@@ -11,7 +11,9 @@ data class PokemonEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name: String,
     val imageUrl: String,
-    //val hp: Int,
+    var hp: Int = 100,
+    val lastUpdated: Long = System.currentTimeMillis(),
+    var isFighter: Boolean = false,
     //val attack: Int,
     //val defense: Int
 ) : Parcelable
