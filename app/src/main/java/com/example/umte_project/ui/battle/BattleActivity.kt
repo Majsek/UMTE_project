@@ -149,9 +149,20 @@ class BattleActivity : AppCompatActivity() {
                 progressBarWild.progress = wildPokemon.hp
                 buttonAttack.visibility = View.GONE
 
-                val toast = Toast.makeText(this@BattleActivity, "${playerFighters.get(fighterIndex).name} dealt $playerDamage damage!", Toast.LENGTH_SHORT)
-                toast.setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL, 0, 200)
-                toast.show()
+
+                var toast : Toast
+                if (fighterIndex in playerFighters.indices) {
+                    toast = Toast.makeText(this@BattleActivity, "${playerFighters[fighterIndex].name} dealt $playerDamage damage!", Toast.LENGTH_SHORT)
+                    toast.show()
+                } else {
+                    toast = Toast.makeText(this@BattleActivity, "No fighter available!", Toast.LENGTH_SHORT)
+                    toast.show()
+                }
+
+
+//                val toast = Toast.makeText(this@BattleActivity, "${playerFighters.get(fighterIndex).name} dealt $playerDamage damage!", Toast.LENGTH_SHORT)
+//                toast.setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL, 0, 200)
+//                toast.show()
                 Handler(Looper.getMainLooper()).postDelayed({
                     toast.cancel()
                 }, 300) // zruší toast po 0.3 sekundách
