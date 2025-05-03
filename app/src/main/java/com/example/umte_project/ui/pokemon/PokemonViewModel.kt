@@ -1,21 +1,14 @@
 package com.example.umte_project.ui.pokemon
 
 import android.app.Application
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.content.Context
-import android.content.Intent
-import androidx.core.app.NotificationCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.umte_project.MainActivity
 import com.example.umte_project.data.PokemonDAO
 import com.example.umte_project.data.PokemonDatabase
 import com.example.umte_project.data.PokemonEntity
-import com.example.umte_project.data.PokemonJSON
 import com.example.umte_project.utils.PokemonHealWorker
 import kotlinx.coroutines.launch
 
@@ -46,12 +39,7 @@ class PokemonViewModel(application: Application) : AndroidViewModel(application)
     suspend fun insertPokemon(pokemon: PokemonEntity) {
         viewModelScope.launch {
             pokemonDao.insertPokemon(pokemon)
-            //loadPokemon() // už není potřeba, protože změna se projeví sama
         }
-    }
-
-    suspend fun getFirstPokemon(): PokemonEntity? {
-        return pokemonDao.getFirstPokemon()
     }
 
     suspend fun getPokemonCount(): Int {
@@ -113,10 +101,6 @@ class PokemonViewModel(application: Application) : AndroidViewModel(application)
                 lastUpdated = System.currentTimeMillis()
             )
         }
-    }
-
-    fun getAllFighterPokemon(): LiveData<List<PokemonEntity>> {
-        return pokemonDao.getAllFighterPokemon().asLiveData()
     }
 
     suspend fun getFighterCount(): Int {

@@ -6,7 +6,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
@@ -17,12 +16,10 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.umte_project.R
 import com.example.umte_project.data.PokemonEntity
-import com.example.umte_project.databinding.FragmentPokemonBinding
 import com.example.umte_project.ui.pokemon.PokemonViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -108,15 +105,15 @@ class BattleActivity : AppCompatActivity() {
 
         return when {
             roll < missChance -> {
-                Log.d("Battle", "Attack missed!")
+//                Log.d("Battle", "Attack missed!")
                 0
             }
             roll < missChance + critChance -> {
-                Log.d("Battle", "Critical hit! Damage: ${baseDamage * 2}")
+//                Log.d("Battle", "Critical hit! Damage: ${baseDamage * 2}")
                 baseDamage * 2
             }
             else -> {
-                Log.d("Battle", "Normal hit. Damage: $baseDamage")
+//                Log.d("Battle", "Normal hit. Damage: $baseDamage")
                 baseDamage
             }
         }
@@ -225,22 +222,14 @@ class BattleActivity : AppCompatActivity() {
                 battleText.text = "${playerFighters.get(fighterIndex).name} fainted!"
                 Toast.makeText(this, "${playerFighters.get(fighterIndex).name} fainted!", Toast.LENGTH_SHORT).show()
 
-                Log.d("TAG", "PŘED ZVÝŠENÍM:")
-                Log.d("TAG", "Hodnota fighterIndex: $fighterIndex")
-                Log.d("TAG","Velikost seznamu: ${playerFighters.size}")
                 fighterIndex++
-                Log.d("TAG", "PO ZVÝŠENÍM:")
-                Log.d("TAG", "Hodnota fighterIndex: $fighterIndex")
-                Log.d("TAG","Velikost seznamu: ${playerFighters.size}")
 
                 if(fighterIndex >= playerFighters.size) {
-                    Log.d("TAG","Vypni se!")
                     val resultIntent = Intent()
                     resultIntent.putExtra("wasCaught", "false")
                     setResult(Activity.RESULT_OK, resultIntent)
                     finish()
                 } else{
-                    Log.d("TAG","Načti dalšího")
                     loadNextFighter()
                 }
                 //buttonAttack.visibility = View.GONE

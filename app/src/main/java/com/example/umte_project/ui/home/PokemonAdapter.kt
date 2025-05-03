@@ -1,5 +1,4 @@
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
@@ -21,7 +20,7 @@ class PokemonAdapter(private var pokemonList: List<PokemonEntity>,
         RecyclerView.ViewHolder(binding.root) {
         fun bind(pokemon: PokemonEntity) {
             binding.textPokemonName.text = pokemon.name
-            //binding.progressBarPokemonHP.visibility = View.GONE
+
             binding.progressBarPokemonHP.progress = pokemon.hp
 
             // ZRUŠ starý listener

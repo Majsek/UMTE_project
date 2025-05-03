@@ -3,7 +3,6 @@ package com.example.umte_project.ui.pokemon
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,8 +17,8 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.umte_project.R
 import com.example.umte_project.api.RetrofitClient
-import com.example.umte_project.data.PokemonJSON
 import com.example.umte_project.data.PokemonEntity
+import com.example.umte_project.data.PokemonJSON
 import com.example.umte_project.databinding.FragmentPokemonBinding
 import com.example.umte_project.ui.battle.BattleActivity
 import kotlinx.coroutines.launch
@@ -77,22 +76,6 @@ class PokemonFragment : Fragment() {
         }
 
         binding.buttonGetPokemon.setOnClickListener(::onGetPokemonButtonClick)
-        //binding.buttonGetPokemon.setOnClickListener(::onFightPokemonClick)
-
-
-
-//        pokemonViewModel.pokemonList.observe(viewLifecycleOwner) { pokemons ->
-//            //binding.textPokemon.text = pokemons.joinToString("\n") { it.name }
-//             pokemons.joinToString("\n") { it.name }
-//        }
-
-//        var playerFighters = ArrayList<PokemonEntity>()
-//        pokemonViewModel.fighterPokemonList.observe(viewLifecycleOwner) { fighters ->
-//            playerFighters = fighters as ArrayList<PokemonEntity>
-//        }
-//        if (playerFighters.size == 0){
-//            binding.textPokemon.text = "You have no fighters!"
-//        }
 
         pokemonViewModel.fighterPokemonList.observe(viewLifecycleOwner) { fighters ->
             fighterSize = fighters.size
@@ -110,12 +93,6 @@ class PokemonFragment : Fragment() {
             }
             }
         }
-
-
-
-
-
-
 
         return root
     }
@@ -139,9 +116,6 @@ class PokemonFragment : Fragment() {
 
             val intent = Intent(requireContext(), BattleActivity::class.java)
             intent.putExtra("wildPokemon", wildPokemonEntity) // Posíláme celou entitu!
-
-            //intent.putExtra("playerPokemon", fighterPokemonList) // Posíláme celou entitu hráčského Pokémona!
-            //startActivity(intent)
             launcher.launch(intent)
             updateText()
         }
@@ -155,7 +129,6 @@ class PokemonFragment : Fragment() {
             findNavController().navigate(R.id.navigation_home)
             return
         }
-
 
         binding.textPokemon.text = "..."
         //We need to cast the view to a Button, because view itself does not have text property.
@@ -172,21 +145,16 @@ class PokemonFragment : Fragment() {
                     println("Name: ${pokemon?.name}\nImage: ${pokemon?.sprites?.frontDefault}")
                     binding.textPokemon.text = newText
                     val imageUrl = "${pokemon?.sprites?.other?.officialArtwork?.frontDefault}"
-                    //val imageUrl = "${pokemon?.sprites?.other?.home?.front_default}"
                     loadPokemonImage(imageUrl)
 
 
                     val pokemonEntity = PokemonEntity(
                         id = pokemon?.id ?: 0, // Zajištění, že id není null
                         name = pokemon?.name?.replaceFirstChar { it.uppercase() } ?: "Unknown", // Zajištění, že name není null
-                        imageUrl = imageUrl // Zde můžeš použít imageUrl, pokud chceš uložit URL obrázku
+                        imageUrl = imageUrl
                     )
 
                     binding.textPokemon.text = newText
-
-//                    lifecycleScope.launch {
-//                        pokemonViewModel.insertPokemon(pokemonEntity)
-//                    }
 
                     wildPokemonEntity = pokemonEntity
                     onFightPokemonClick(view, pokemonEntity)

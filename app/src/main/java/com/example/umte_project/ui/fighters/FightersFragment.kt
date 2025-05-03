@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -56,7 +55,7 @@ class FightersFragment : Fragment() {
                 binding.textFighters.visibility = View.VISIBLE
                 binding.recyclerViewFighters.visibility = View.VISIBLE
                 binding.textFighters.text = "Unassign wounded fighters to let them heal."
-                adapter.updateData(fighters) // nebo jak máš jméno adapteru
+                adapter.updateData(fighters)
             }
         }
 
