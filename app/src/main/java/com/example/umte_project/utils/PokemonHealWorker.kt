@@ -11,7 +11,6 @@ import androidx.work.WorkerParameters
 import com.example.umte_project.MainActivity
 import com.example.umte_project.data.PokemonDatabase
 import com.example.umte_project.ui.notifications.NotificationsViewModel
-import dagger.hilt.android.internal.Contexts.getApplication
 
 class PokemonHealWorker(
     context: Context,
@@ -39,7 +38,6 @@ class PokemonHealWorker(
                 dao.updateHP(pokemon.id, newHP, now)
 
                 if (newHP == 100 && pokemon.hp < 100) {
-                    // Voláme tvoji funkci na notifikaci
                     sendHealedNotification(applicationContext, pokemon.name)
                 }
             }
@@ -55,7 +53,7 @@ class PokemonHealWorker(
             // Intent na otevření MainActivity
             val intent = Intent(context, MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                putExtra("pokemon_name", pokemonName) // volitelně – můžeš pak rozparsovat konkrétního Pokémona
+                putExtra("pokemon_name", pokemonName)
             }
 
             val pendingIntent = PendingIntent.getActivity(
@@ -69,8 +67,8 @@ class PokemonHealWorker(
                 .setSmallIcon(android.R.drawable.star_on)
                 .setContentTitle("Pokémon is fully healed!")
                 .setContentText("$pokemonName is now at 100% HP 🎉")
-                .setContentIntent(pendingIntent) // <- Tady to přidáš
-                .setAutoCancel(true) // Notifikace zmizí po kliknutí
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
             val notificationViewModel = NotificationsViewModel(application = Application())
